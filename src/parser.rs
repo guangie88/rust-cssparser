@@ -4,6 +4,8 @@
 
 use cow_rc_str::CowRcStr;
 use smallvec::SmallVec;
+use std::error::Error;
+use std::fmt::{self, Debug, Display, Formatter};
 use std::ops::Range;
 #[allow(unused_imports)] use std::ascii::AsciiExt;
 use std::ops::BitOr;
@@ -149,6 +151,18 @@ impl<'i, T> ParseError<'i, T> {
             kind: self.kind.into(),
             location: self.location,
         }
+    }
+}
+
+impl<'i, E: 'i + Debug> Error for ParseError<'i, E> {
+    fn description(&self) -> &str {
+        "CSS parser parse error"
+    }
+}
+
+impl<'i, E: 'i + Debug> Display for ParseError<'i, E> {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), fmt::Error> {
+        write!(f, "{{ kind: {:?}, location: {:?} }}", self.kind, self.location)
     }
 }
 
